@@ -1,0 +1,28 @@
+{% extends "index.html" %}
+
+{% block title %}Register | Student Portal{% endblock %}
+{% block page_class %}register-page{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>Register</h2>
+    <form action="/register" method="POST">
+        <div class="form-group">
+            <label for="name">Full Name</label>
+            <input type="text" id="name" name="name" placeholder="e.g. Walid Mensor" required>
+        </div>
+
+        <div class="form-group">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" name="email" placeholder="e.g. student@example.com" required>
+        </div>
+
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" placeholder="Enter at least 8 characters" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block">Register</button>
+    </form>
+</div>
+{% endblock %}

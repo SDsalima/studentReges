@@ -1,0 +1,14 @@
+{% extends "index.html" %}
+
+{% block title %}Dashboard | Student Portal{% endblock %}
+{% block page_class %}dashboard-page{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>Welcome, {{ student.name }}! ✋</h2>
+    <p class="user-email">Your email: {{ student.email }}</p>
+    <div style="margin-top: 1.5rem;">
+        <a href="{{ url_for('logout') }}" class="btn btn-secondary">Logout</a>
+    </div>
+</div>
+{% endblock %}

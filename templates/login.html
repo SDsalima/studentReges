@@ -1,0 +1,23 @@
+{% extends "index.html" %}
+
+{% block title %}Login | Student Portal{% endblock %}
+{% block page_class %}login-page{% endblock %}
+
+{% block content %}
+<div class="card">
+    <h2>Login</h2>
+    <form action="/login" method="POST">
+        <div class="form-group">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" name="email" placeholder="e.g. student@example.com" required>
+        </div>
+
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" placeholder="Enter password" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block">Login</button>
+    </form>
+</div>
+{% endblock %}

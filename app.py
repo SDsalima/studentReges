@@ -21,33 +21,44 @@ from flask_jwt_extended import (
 
 app = Flask(__name__)
 
-# --- Database & Config ---
-# Reads DATABASE_URL from cloud environment if available; falls back to local PostgreSQL
-db_url = os.environ.get(
-    "DATABASE_URL", 
-    "postgresql://postgres:root@localhost:5432/student_db"
-)
+# --- 1. Database Connection Logic ---
+db_url = os.environ.get("DATABASE_URL")
 
-# Render / Heroku database URLs start with 'postgres://', but SQLAlchemy requires 'postgresql://'
-if db_url and db_url.startswith("postgres://"):
+# Fallback to local machine only when developing locally
+if not db_url:
+    db_url = "postgresql://postgres:root@localhost:5432/student_db"
+
+# Fix URL scheme (Supabase/Render use 'postgres://', SQLAlchemy needs 'postgresql://')
+if db_url.startswith("postgres://"):
     db_url = db_url.replace("postgres://", "postgresql://", 1)
+
+# Ensure SSL mode is requested for cloud PostgreSQL providers (Supabase)
+if "supabase" in db_url and "?sslmode=" not in db_url:
+    db_url += "?sslmode=require"
 
 app.config["SQLALCHEMY_DATABASE_URI"] = db_url
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
-# --- Secret Keys ---
+# --- 2. Secret Keys ---
 app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "secret_salima_key_student")
 app.config["JWT_SECRET_KEY"] = os.environ.get("JWT_SECRET_KEY", "salima_super_key")
 
-# --- JWT Cookie Settings ---
+# --- 3. JWT Cookie Settings ---
 app.config["JWT_TOKEN_LOCATION"] = ["cookies"]
 app.config["JWT_COOKIE_CSRF_PROTECT"] = False
 
-# --- Extensions Initialization ---
+# --- 4. Extensions Initialization ---
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 jwt = JWTManager(app)
 
+# --- 5. Automatically Create Tables on Cloud Deploy ---
+with app.app_context():
+    try:
+        db.create_all()
+    except Exception as e:
+        print(f"Database setup note: {e}")
+        
 # --- JWT Error Callbacks (Prevents Raw JSON on Unauthorized Access) ---
 @jwt.unauthorized_loader
 def missing_token_callback(error):
